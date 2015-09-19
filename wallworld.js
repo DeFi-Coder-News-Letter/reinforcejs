@@ -83,10 +83,10 @@ var Item = function(x, y, type) {
   this.cleanup_ = false;
 };
 
-var World = function() {
+var World = function(w, h) {
   this.agents = [];
-  this.W = canvas.width;
-  this.H = canvas.height;
+  this.W = w || canvas.width;
+  this.H = h || canvas.height;
 
   this.clock = 0;
 
@@ -495,7 +495,7 @@ var Agent = function(id, config) {
   this.flott = 0;
 
   // positional information
-  this.p = new Vec(300, 300);
+  this.p = new Vec(50, 50);
   this.v = new Vec(0,0);
   this.op = this.p; // old position
   this.angle = 0; // direction facing

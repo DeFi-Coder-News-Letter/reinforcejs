@@ -235,8 +235,8 @@
           max: nflot
         },
         yaxis: {
-          min: -0.1,
-          max: 0.1
+          min: 0,
+          max: 1
         }
       });
       setInterval(function(){
@@ -320,8 +320,7 @@
     function initAgent(id) {
       eval($("#agentspec_"+id).val());
       var a = new Agent(id, config);
-      env = a;
-      a.brain = new RL.DQNAgent(env, spec); // give agent a TD brain
+      a.brain = new RL.DQNAgent(a, spec); // give agent a TD brain
       //a.brain = new RL.RecurrentReinforceAgent(env, {});
 
       var goalx = randf(20, w.W-20);
@@ -353,7 +352,8 @@
       canvas = document.getElementById("canvas");
       ctx = canvas.getContext("2d");
 
-      w = new World();
+      // Start small.
+      w = new World(250, 250*(canvas.height/canvas.width));
       w.agents = [];
 
       initAgent('01');
@@ -367,6 +367,21 @@
         $(this).html(marked($(this).html()));
       });
       renderJax();
+    }
+
+    function sizeroom(larger) {
+      if (larger) {
+        w.W += w.W*0.1;
+        w.H += w.H*0.1;
+      } else {
+        w.W -= w.W*0.1;
+        w.H -= w.H*0.1;
+      }
+      w.W = Math.min(canvas.width, w.W);
+      w.H = Math.min(canvas.height, w.H);
+      w.walls = [];
+      var pad = 0;
+      util_add_box(w.walls, pad, pad, w.W-pad*2, w.H-pad*2);
     }
 
     var jaxrendered = false;
@@ -507,6 +522,9 @@ spec.num_hidden_units = 100 // number of neurons in hidden layer
 <button class="btn btn-success" onclick="gofast()" style="width:150px;height:50px;margin-bottom:5px;">Go fast</button>
 <button class="btn btn-success" onclick="gonormal()" style="width:150px;height:50px;margin-bottom:5px;">Go normal</button>
 <button class="btn btn-success" onclick="goslow()" style="width:150px;height:50px;margin-bottom:5px;">Go slow</button>
+
+<button class="btn btn-success" onclick="sizeroom(true)" style="width:150px;height:50px;margin-bottom:5px;">Larger</button>
+<button class="btn btn-success" onclick="sizeroom()" style="width:150px;height:50px;margin-bottom:5px;">Smaller</button>
 
 <canvas id="canvas" width="700" height="500"></canvas>
 </div>
