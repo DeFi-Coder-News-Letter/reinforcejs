@@ -236,7 +236,7 @@
         },
         yaxis: {
           min: 0,
-          max: 1
+          max: 0.1
         }
       });
       setInterval(function(){
@@ -369,6 +369,14 @@
       renderJax();
     }
 
+    // inner walls
+    function walls() {
+      util_add_box(w.walls, 100, 100, 200, 300);
+      w.walls.pop();
+      util_add_box(w.walls, 400, 100, 200, 300);
+      w.walls.pop();
+    }
+
     function sizeroom(larger) {
       if (larger) {
         w.W += w.W*0.1;
@@ -438,7 +446,7 @@ var config = {
   colour: 'rgb(237,194,64)',
   sensors: {
     eyes: {
-      names: ['range_3l','range_2l','range_1l','range_0','range_1r','range_2r','range_3r'],
+      names: ['range_4r','range_3l','range_2l','range_1l','range_1r','range_2r','range_3r','range_4r'],
       fov: 15*Math.PI/180,
       range: 85,
       types: 1
@@ -486,7 +494,7 @@ var config = {
   colour: 'rgb(175,216,248)',
   sensors: {
     eyes: {
-      names: ['range_3l','range_2l','range_1l','range_0','range_1r','range_2r','range_3r'],
+      names: ['range_4r','range_3l','range_2l','range_1l','range_1r','range_2r','range_3r','range_4r'],
       fov: 15*Math.PI/180,
       range: 85,
       types: 1
@@ -532,6 +540,8 @@ spec.num_hidden_units = 100 // number of neurons in hidden layer
 
 <button class="btn btn-success" onclick="sizeroom(true)" style="width:150px;height:50px;margin-bottom:5px;">Larger</button>
 <button class="btn btn-success" onclick="sizeroom()" style="width:150px;height:50px;margin-bottom:5px;">Smaller</button>
+<button class="btn btn-success" onclick="walls()" style="width:150px;height:50px;margin-bottom:5px;">Inner walls</button>
+
 
 <canvas id="canvas" width="700" height="500"></canvas>
 </div>
@@ -555,6 +565,18 @@ spec.num_hidden_units = 100 // number of neurons in hidden layer
 
 
 <div id="exp" class="md">
+
+  ### Setup
+
+  This is another Deep Q Learning demo with a more realistic and larger setup:
+
+  - The **state space** is continuous: The agent has 8 eye sensors each observes 1 variable: the range of walls/items. Along with 31 nostril sensors each observes 1 variable: the range of goals (ignoring walls). This is a total of 39-dimensional state space.
+  - There are 5 **actions** available to the agent: To turn on the spot (left or right), forward turns (left or right), or straight forward.
+  - The **reward** awarded to the agent is +1 for making contact with their goal.
+
+  ### TODO
+
+  * [ ] The agent's proprioception includes two additional sensors for its own speed ~~in both x and y directions~~ on each wheel.
 
 </div>
 

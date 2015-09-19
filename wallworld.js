@@ -515,6 +515,7 @@ var Agent = function(id, config) {
      }
    }
   }
+  console.log('num_inputs', num_inputs);
 
   this.actions = (config.actions)?config.actions:[
     // Default actions.
@@ -562,6 +563,7 @@ Agent.prototype = {
     for (j in this.sensors) {
       if (this.sensors.hasOwnProperty(j)) {
         num_inputs += this.sensors[j].length;
+        // FIXME: Add `max_type` of each sensor to `num_inputs`.
       }
     }
     var input_array = new Array(num_inputs * 1);
