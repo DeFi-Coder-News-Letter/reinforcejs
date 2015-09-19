@@ -245,45 +245,52 @@ World.prototype = {
       a.op = a.p; // back up old position
       a.oangle = a.angle; // and angle
 
-      // execute agent's desired action
-      var speed = 1;
-      if(a.action === 0) {
-        a.v.x += -speed;
-      }
-      if(a.action === 1) {
-        a.v.x += speed;
-      }
-      if(a.action === 2) {
-        a.v.y += -speed;
-      }
-      if(a.action === 3) {
-        a.v.y += speed;
-      }
+      // steer the agent according to outputs of wheel velocities
+      var rot1 = a.actions[a.action][0]*1;
+      var rot2 = a.actions[a.action][1]*1;
+      var v = new Vec(0, a.rad / 2.0);
+      v = v.rotate(a.angle + Math.PI/2);
+      var w1p = a.p.add(v); // positions of wheel 1 and 2
+      var w2p = a.p.sub(v);
+      var vv = a.p.sub(w2p);
+      vv = vv.rotate(-rot1);
+      var vv2 = a.p.sub(w1p);
+      vv2 = vv2.rotate(rot2);
+      var np = w2p.add(vv);
+      np.scale(0.5);
+      var np2 = w1p.add(vv2);
+      np2.scale(0.5);
+      a.p = np.add(np2);
 
-      // forward the agent by velocity
-      a.v.x *= 0.95; a.v.y *= 0.95;
-      a.p.x += a.v.x; a.p.y += a.v.y;
+      a.angle -= rot1;
+      if(a.angle<0)a.angle+=2*Math.PI;
+      a.angle += rot2;
+      if(a.angle>2*Math.PI)a.angle-=2*Math.PI;
 
       // agent is trying to move from p to op. Check walls
-      //var res = this.stuff_collide_(a.op, a.p, true, false);
-      //if(res) {
-        // wall collision...
-      //}
+      if(this.stuff_collide_(a.op, a.p, true, false)) {
+        // wall collision! reset position
+        a.p = a.op;
+      }
+
+      // handle boundary conditions
+      if(a.p.x<0)a.p.x=0;
+      if(a.p.x>this.W)a.p.x=this.W;
+      if(a.p.y<0)a.p.y=0;
+      if(a.p.y>this.H)a.p.y=this.H;
 
       // handle boundary conditions.. bounce agent
+      /*
       if(a.p.x<1) { a.p.x=1; a.v.x=0; a.v.y=0;}
       if(a.p.x>this.W-1) { a.p.x=this.W-1; a.v.x=0; a.v.y=0;}
       if(a.p.y<1) { a.p.y=1; a.v.x=0; a.v.y=0;}
       if(a.p.y>this.H-1) { a.p.y=this.H-1; a.v.x=0; a.v.y=0;}
-
-      // if(a.p.x<0) { a.p.x= this.W -1; };
-      // if(a.p.x>this.W) { a.p.x= 1; }
-      // if(a.p.y<0) { a.p.y= this.H -1; };
-      // if(a.p.y>this.H) { a.p.y= 1; };
+      */
 
       a.digestion_signal = 0; // important - reset this!
     }
 
+    /*
     // tick all items
     var update_items = false;
     for(i=0,n=this.items.length;i<n;i++) {
@@ -339,6 +346,7 @@ World.prototype = {
       var newit = new Item(newitx, newity, newitt);
       this.items.push(newit);
     }
+    */
 
     // tick all goals
     // see if some agent gets lunch
@@ -583,6 +591,8 @@ Agent.prototype = {
   },
   backward: function() {
     var reward = this.digestion_signal;
+
+    if (this.digestion_signal > 0) console.log(this.id, 'nom nom nom');
 
     // var proximity_reward = 0.0;
     // var num_eyes = this.eyes.length;
