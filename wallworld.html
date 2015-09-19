@@ -424,8 +424,10 @@
     </ul>
    </div>
 
-<div>
-<textarea id="agentspec_01" style="width:45%;height:250px;">
+<div class="form-inline">
+  <div class="form-group">
+    <label for="agentspec_01">Agent 01</label>
+    <textarea id="agentspec_01" style="display: block;" class="form-control" rows="10" cols="44">
 // agent sensor configuration
 var nostril_num   = 31;
 var nostril_names = [];
@@ -468,9 +470,11 @@ spec.experience_size = 10000; // size of experience
 spec.learning_steps_per_iteration = 5;
 spec.tderror_clamp = 1.0; // for robustness
 spec.num_hidden_units = 100 // number of neurons in hidden layer
-</textarea>
-
-<textarea id="agentspec_02" style="width:45%;height:250px;">
+    </textarea>
+  </div>
+  <div class="form-group">
+    <label for="agentspec_02">Agent 02</label>
+    <textarea id="agentspec_02" style="display: block;" class="form-control" rows="10" cols="44">
 // agent sensor configuration
 var nostril_num   = 31;
 var nostril_names = [];
@@ -513,7 +517,8 @@ spec.experience_size = 10000; // size of experience
 spec.learning_steps_per_iteration = 5;
 spec.tderror_clamp = 1.0; // for robustness
 spec.num_hidden_units = 100 // number of neurons in hidden layer
-</textarea>
+    </textarea>
+  </div>
 </div>
 
 <div style="text-align:center;">
