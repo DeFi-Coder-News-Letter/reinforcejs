@@ -87,12 +87,14 @@
       ctx.stroke();
 
       // draw agents
-      // color agent based on reward it is experiencing at the moment
       var r = 0;
-      ctx.fillStyle = "rgb(" + r + ", 150, 150)";
-      ctx.strokeStyle = "rgb(0,0,0)";
+
       for(var i=0,n=agents.length;i<n;i++) {
         var a = agents[i];
+
+        // consistently color agent based on config
+        ctx.fillStyle = a.colour;
+        ctx.strokeStyle = "rgb(0,0,0)";
 
         // draw agents body
         ctx.beginPath();
@@ -101,18 +103,47 @@
         ctx.stroke();
 
         // draw agents sight
-        for(var ei=0,ne=a.eyes.length;ei<ne;ei++) {
-          var e = a.eyes[ei];
-          var sr = e.sensed_proximity;
-          if(e.sensed_type === -1 || e.sensed_type === 0) {
-            ctx.strokeStyle = "rgb(200,200,200)"; // wall or nothing
+        for(ei=0,ne=a.sensors.eyes.length;ei<ne;ei++) {
+          var eye = a.sensors.eyes[ei];
+          var er = eye.sensed_proximity;
+          if(eye.sensed_type === -1 || eye.sensed_type === 0) {
+            ctx.strokeStyle = "rgb(0,0,0)"; // wall or nothing
           }
-          if(e.sensed_type === 1) { ctx.strokeStyle = "rgb(255,150,150)"; } // apples
-          if(e.sensed_type === 2) { ctx.strokeStyle = "rgb(150,255,150)"; } // poison
+          if(eye.sensed_type === 1) { ctx.strokeStyle = "rgb(255,150,150)"; } // apples
+          if(eye.sensed_type === 2) { ctx.strokeStyle = "rgb(150,255,150)"; } // poison
           ctx.beginPath();
           ctx.moveTo(a.op.x, a.op.y);
-          ctx.lineTo(a.op.x + sr * Math.sin(a.oangle + e.angle),
-                     a.op.y + sr * Math.cos(a.oangle + e.angle));
+          ctx.lineTo(a.op.x + er * Math.sin(a.oangle + eye.angle),
+                     a.op.y + er * Math.cos(a.oangle + eye.angle));
+          ctx.stroke();
+        }
+
+        // draw goal
+        var g = a.goal;
+        if (g) {
+          ctx.fillStyle = "rgb(150, 150, 150)";
+          ctx.strokeStyle = "rgb(150,150,150)";
+          if(g.type === 1) ctx.fillStyle = "rgb(255, 150, 150)";
+          if(g.type === 2) ctx.fillStyle = "rgb(150, 255, 150)";
+          ctx.beginPath();
+          ctx.arc(g.p.x, g.p.y, g.rad, 0, Math.PI*2, true);
+          ctx.fill();
+          ctx.stroke();
+        }
+
+        // draw agents smell
+        for(ei=0,ne=a.sensors.nostrils.length;ei<ne;ei++) {
+          var nostril = a.sensors.nostrils[ei];
+          var nr = nostril.sensed_proximity;
+          if(nostril.sensed_type === -1) {
+            ctx.strokeStyle = "rgb(230,230,230)";
+          } else if (nostril.sensed_type === 0) {
+            ctx.strokeStyle = "rgb(255,150,150)";
+          }
+          ctx.beginPath();
+          ctx.moveTo(a.op.x, a.op.y);
+          ctx.lineTo(a.op.x + nr * Math.sin(a.oangle + nostril.angle),
+                     a.op.y + nr * Math.cos(a.oangle + nostril.angle));
           ctx.stroke();
         }
       }
@@ -158,7 +189,6 @@
           agent.flott = 0;
         }
 
-        console.log('expi', agent.expi);
         if(typeof agent.expi !== 'undefined') {
           $("#expi_"+agent.id).html(agent.expi);
         }
@@ -287,10 +317,17 @@
 
     function initAgent(id) {
       eval($("#agentspec_"+id).val());
-      var a = new Agent(id);
+      var a = new Agent(id, config);
       env = a;
       a.brain = new RL.DQNAgent(env, spec); // give agent a TD brain
       //a.brain = new RL.RecurrentReinforceAgent(env, {});
+
+      var goalx = randf(20, w.W-20);
+      var goaly = randf(20, w.H-20);
+      var goal = new Item(goalx, goaly, 0);
+      goal.rad = 10;
+      a.goal = goal;
+
       w.agents.push(a);
 
       $("#slider_"+id).slider({
@@ -372,6 +409,37 @@
 
 <div>
 <textarea id="agentspec_01" style="width:45%;height:250px;">
+// agent sensor configuration
+var nostril_num   = 31;
+var nostril_names = [];
+for (var i=1; i<=nostril_num; i++) {
+  nostril_names.push('nostril_'+i);
+}
+var config = {
+  colour: 'rgb(0,0,255)',
+  sensors: {
+    eyes: {
+      names: ['range_3l','range_2l','range_1l','range_0','range_1r','range_2r','range_3r'],
+      fov: 15*Math.PI/180,
+      range: 85,
+      types: 1
+    },
+    nostrils: {
+      names: nostril_names,
+      fov: 2*Math.PI/nostril_num,
+      range: 750,
+      types: 1
+    }
+  },
+  actions: [
+    [1.0,1.0],
+    [1.0,0.75],
+    [0.75,1.0],
+    [0.5,0.0],
+    [0.0,0.5]
+  ]
+};
+
 // agent parameter spec to play with (this gets eval()'d on Agent reset)
 var spec = {}
 spec.update = 'qlearn'; // qlearn | sarsa
@@ -386,6 +454,37 @@ spec.num_hidden_units = 100 // number of neurons in hidden layer
 </textarea>
 
 <textarea id="agentspec_02" style="width:45%;height:250px;">
+// agent sensor configuration
+var nostril_num   = 31;
+var nostril_names = [];
+for (var i=1; i<=nostril_num; i++) {
+  nostril_names.push('nostril_'+i);
+}
+var config = {
+  colour: 'rgb(0,255,0)',
+  sensors: {
+    eyes: {
+      names: ['range_3l','range_2l','range_1l','range_0','range_1r','range_2r','range_3r'],
+      fov: 15*Math.PI/180,
+      range: 85,
+      types: 1
+    },
+    nostrils: {
+      names: nostril_names,
+      fov: 2*Math.PI/nostril_num,
+      range: 750,
+      types: 1
+    }
+  },
+  actions: [
+    [1.0,1.0],
+    [1.0,0.75],
+    [0.75,1.0],
+    [0.5,0.0],
+    [0.0,0.5]
+  ]
+};
+
 // agent parameter spec to play with (this gets eval()'d on Agent reset)
 var spec = {}
 spec.update = 'qlearn'; // qlearn | sarsa
