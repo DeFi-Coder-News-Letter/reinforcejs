@@ -292,7 +292,7 @@
 
     function resetAgent(agent) {
       eval($("#agentspec_"+agent.id).val())
-      var brain = new RL.DQNAgent(env, spec);
+      var brain = new RL.DQNAgent(agent, spec);
       agent.brain = brain;
     }
 
