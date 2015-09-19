@@ -189,11 +189,11 @@
           agent.flott = 0;
         }
 
-        if(typeof agent.expi !== 'undefined') {
-          $("#expi_"+agent.id).html(agent.expi);
+        if(typeof agent.brain.expi !== 'undefined') {
+          $("#expi_"+agent.id).html(agent.brain.expi);
         }
-        if(typeof agent.tderror !== 'undefined') {
-          $("#tde_"+agent.id).html(agent.tderror.toFixed(3));
+        if(typeof agent.brain.tderror !== 'undefined') {
+          $("#tde_"+agent.id).html(agent.brain.tderror.toFixed(3));
         }
       }
     }
@@ -552,17 +552,30 @@ spec.num_hidden_units = 100 // number of neurons in hidden layer
   <span id="eps_02">0.15</span> <div id="slider_02"></div>
 </div>
 
-<div>
-  <div id="expi_01"></div>
-  <div id="expi_02"></div>
-  <div id="tde_01"></div>
-  <div id="tde_02"></div>
+<div class="row">
+  <div class="col-md-6">
+    Experience write pointer:<br/>
+    <dl class="dl-horizontal">
+      <dt>Agent 01</dt>
+      <dd id="expi_01"></dd>
+      <dt>Agent 02</dt>
+      <dd id="expi_02"></dd>
+    </dl>
+  </div>
+  <div class="col-md-6">
+    Latest TD error:<br/>
+    <dl class="dl-horizontal">
+      <dt>Agent 01</dt>
+      <dd id="tde_01"></dd>
+      <dt>Agent 02</dt>
+      <dd id="tde_02"></dd>
+    </dl>
+  </div>
 </div>
 
 <div id="flotreward" style="width:800px; height: 400px;"></div>
 
 <textarea id="mysterybox" style="width:100%;display:none;">mystery text box</textarea>
-
 
 <div id="exp" class="md">
 
