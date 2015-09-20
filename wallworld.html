@@ -199,7 +199,7 @@
     }
 
     // flot stuff
-    var nflot = 5000;
+    var nflot = 2000;
     function initFlot() {
       var container = $("#flotreward");
       var series = new Array(w.agents.length);
@@ -236,7 +236,7 @@
         },
         yaxis: {
           min: 0,
-          max: 0.01
+          max: 0.1
         }
       });
       setInterval(function(){
@@ -371,10 +371,14 @@
 
     // inner walls
     function walls() {
-      util_add_box(w.walls, 100, 100, 200, 300);
-      w.walls.pop();
-      util_add_box(w.walls, 400, 100, 200, 300);
-      w.walls.pop();
+      if (w.W === canvas.width && w.H === canvas.height) {
+        util_add_box(w.walls, 100, 100, 200, 300);
+        w.walls.pop();
+        util_add_box(w.walls, 400, 100, 200, 300);
+        w.walls.pop();
+      } else {
+        util_add_box(w.walls, w.W/3, w.H/2, w.W/3, 2);
+      }
     }
 
     function sizeroom(larger) {
@@ -472,7 +476,7 @@ var spec = {}
 spec.update = 'qlearn'; // qlearn | sarsa
 spec.gamma = 0.9; // discount factor, [0, 1)
 spec.epsilon = 0.2; // initial epsilon for epsilon-greedy policy, [0, 1)
-spec.alpha = 0.001; // value function learning rate
+spec.alpha = 0.005; // value function learning rate
 spec.experience_add_every = 1; // number of time steps before we add another experience to replay memory
 spec.experience_size = 40000; // size of experience
 spec.learning_steps_per_iteration = 64;
@@ -520,7 +524,7 @@ var spec = {}
 spec.update = 'sarsa'; // qlearn | sarsa
 spec.gamma = 0.9; // discount factor, [0, 1)
 spec.epsilon = 0.2; // initial epsilon for epsilon-greedy policy, [0, 1)
-spec.alpha = 0.001; // value function learning rate
+spec.alpha = 0.005; // value function learning rate
 spec.experience_add_every = 1; // number of time steps before we add another experience to replay memory
 spec.experience_size = 40000; // size of experience
 spec.learning_steps_per_iteration = 64;
