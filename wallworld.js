@@ -516,6 +516,7 @@ var Agent = function(id, config) {
    }
   }
   console.log('num_inputs', num_inputs);
+  this.num_states = num_inputs;
 
   this.actions = (config.actions)?config.actions:[
     // Default actions.
@@ -545,7 +546,6 @@ var Agent = function(id, config) {
   this.action = 0;
 
   this.prevactionix = -1;
-  //this.num_states = this.eyes.length * 5 + 2;
 };
 Agent.prototype = {
   getNumStates: function() {
@@ -582,6 +582,7 @@ Agent.prototype = {
           }
         }
         // Offset the next sensor group by this much.
+        // FIXME: Count using each sensor's `max_type`.
         idx_last += this.sensors[j].length * this.sensors[j][0].max_type;
       }
     }
